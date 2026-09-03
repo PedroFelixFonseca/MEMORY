@@ -1,0 +1,40 @@
+h1{
+    text-align: center;
+    font-size: 3rem;
+    color: rgb(0, 0, 0);
+    margin-bottom: 24px;
+}
+#board{
+    display: grid;
+    width: 600px;
+    height: 400px;
+    margin: 0 auto;
+    background-color: #ffaad0;
+    grid-template-columns: repeat(6, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    border-radius: 12px;
+    padding: 24px;
+    box-shadow: 3px -1px 79px 16px rgba(0, 0, 0, 0.62);
+}
+
+.card{
+    margin: auto;
+    position: relative;
+    width: 90%;
+    height: 90%;
+    background-color: rgb(124, 81, 81);
+    border-radius: 8px;
+    box-shadow: inset 3px -1px 64px 21px rgba(0, 0, 0, 0.56);
+     
+    &:not(.hidden)::after {
+        content: attr(data-emoji);
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        transform: translate(-50%, -50%);
+    }
+      &.hidden {
+     box-shadow: inset 3px -1px 64px 21px rgba(0, 0, 0, 0.56);
+  }
+}
+
