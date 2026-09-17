@@ -30,6 +30,7 @@ let secondChoice = null;
 let cardsLeftToMatch = emojis.length / 2;
 let isBoardLocked = false;
 const board = document.querySelector("#board");
+
 const shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -87,7 +88,7 @@ shuffle(emojis).forEach((emoji) => {
   card.addEventListener("click", () => {
     if (
       !card.classList.contains("hidden") ||
-      isBoardLocked || // on utilise cette variable pour vérifier si le plateau doit être bloqué
+      isBoardLocked || 
       firstChoice === card
     ) {
       return; // early return
