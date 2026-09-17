@@ -66,7 +66,10 @@ const checkForMatch = () => {
   if (firstChoice.dataset.emoji === secondChoice.dataset.emoji) {
     cardsLeftToMatch = cardsLeftToMatch - 1;
     if (cardsLeftToMatch === 0) {
-      window.alert("Bravo !");
+      const winMessage = document.createElement("div");
+      winMessage.classList.add("win-message");
+      winMessage.textContent = "t'y as gagné le boss!";
+      board.appendChild(winMessage);
     }
     resetChoices();
   } else {
