@@ -1,20 +1,21 @@
 h1{
     text-align: center;
     font-size: 3rem;
-    color: rgb(0, 0, 0);
+    color: rgb(195, 247, 173);
     margin-bottom: 24px;
+    font-family: sans-serif;
 }
 #board{
     display: grid;
     width: 600px;
     height: 400px;
     margin: 0 auto;
-    background-color: #ffaad0;
+    background-color: rgb(195, 247, 173);
     grid-template-columns: repeat(6, 1fr);
     grid-template-rows: repeat(4, 1fr);
     border-radius: 12px;
     padding: 24px;
-    box-shadow: 3px -1px 79px 16px rgba(0, 0, 0, 0.62);
+    
 }
 
 .card{
@@ -22,9 +23,9 @@ h1{
     position: relative;
     width: 90%;
     height: 90%;
-    background-color: rgb(124, 81, 81);
+    background-color: rgb(35, 35, 35);
     border-radius: 8px;
-    box-shadow: inset 3px -1px 64px 21px rgba(0, 0, 0, 0.56);
+    box-shadow: inset 3px -1px 64px 21px rgb(195, 247, 173);
      
     &:not(.hidden)::after {
         content: attr(data-emoji);
@@ -35,6 +36,20 @@ h1{
     }
       &.hidden {
      box-shadow: inset 3px -1px 64px 21px rgba(0, 0, 0, 0.56);
-  }
+      }
 }
 
+.winscreen{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color:rgb(195, 247, 173);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color:rgb(35, 35, 35);
+    font-size: 2rem;
+    font-family: sans-serif;
+}
