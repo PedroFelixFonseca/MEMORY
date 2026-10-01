@@ -30,6 +30,9 @@ let firstChoice = null;
 let secondChoice = null;
 let cardsLeftToMatch = emojis.length / 2;
 let isBoardLocked = false;
+let moves = 0;
+let secondsElapsed = 0;
+let timerId = null;
 const board = document.querySelector("#board");
 
 const shuffle = (array) => {
@@ -41,6 +44,19 @@ const shuffle = (array) => {
   }
 
   return array;
+};
+
+const startTimer = () => {
+  if (timerId !== null) return;
+  timerId = setInterval(() => {
+    secondsElapsed++;
+    timerDisplay.textContent = formatTime(secondsElapsed);
+  }, 1000);
+};
+
+const stopTimer = () => {
+  clearInterval(timerId);
+  timerId = null;
 };
 
 const revealCard = (card) => {
@@ -83,29 +99,43 @@ const checkForMatch = () => {
   }
 };
 
-shuffle(emojis).forEach((emoji) => {
-  const card = createCard(emoji);
+const startRound = () => {
+  stopTimer();
+  moves = 0;
+  secondsElapsed = 0;
+  cardsLeftToMatch = emojis.length / 2;
+  movesDisplay.textContent = moves;
+  timerDisplay.textContent = formatTime(secondsElapsed);
+  resetChoices();
+  board.innerHTML = "";
 
-  card.addEventListener("click", () => {
-    if (
-      !card.classList.contains("hidden") ||
-      isBoardLocked || 
-      firstChoice === card
-    ) {
-      return;
-    }
+  shuffle([...emojis]).forEach((emoji) => {
+    const card = createCard(emoji);
 
-    revealCard(card);
+    card.addEventListener("click", () => {
+      if (!card.classList.contains("hidden") || isBoardLocked || firstChoice === card) {
+        return;
+      }
 
-    if (firstChoice === null) {
-      firstChoice = card;
-      return; 
-    }
+      startTimer();
+      revealCard(card);
 
-    secondChoice = card;
-    isBoardLocked = true; 
-    checkForMatch(); 
+      if (firstChoice === null) {
+        firstChoice = card;
+        return;
+      }
+
+      secondChoice = card;
+      isBoardLocked = true;
+      moves++;
+      movesDisplay.textContent = moves;
+      checkForMatch();
+    });
+
+    board.appendChild(card);
   });
+};
+  
 
-  board.appendChild(card);
-});
+restartButton.addEventListener("click", startRound);
+startRound();
