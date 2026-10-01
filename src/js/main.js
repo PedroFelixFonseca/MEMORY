@@ -136,6 +136,5 @@ const startRound = () => {
   });
 };
   
-
 restartButton.addEventListener("click", startRound);
 startRound();
