@@ -1,28 +1,29 @@
+import { gsap } from "gsap";
 const emojis = [
-  "👄",
-  "🧚‍♀️",
-  "💩",
-  "🐢",
-  "🤡",
-  "👁️",
-  "🐤",
-  "🙊",
-  "🌽",
-  "🌵",
-  "🌻",
-  "🐝",
-  "👄",
-  "🧚‍♀️",
-  "💩",
-  "🐢",
-  "🤡",
-  "👁️",
-  "🐤",
-  "🙊",
-  "🌽",
-  "🌵",
-  "🌻",
-  "🐝",
+  "1",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "f",
+  "9",
+  "0",
+  "q",
+  "w",
+  "u",
+  "1",
+  "3",
+  "4",
+  "5",
+  "6",
+  "7",
+  "f",
+  "9",
+  "0",
+  "q",
+  "w",
+  "u",
 ];
 
 let firstChoice = null;
@@ -69,7 +70,7 @@ const checkForMatch = () => {
     if (cardsLeftToMatch === 0) {
       const winMessage = document.createElement("div");
       winMessage.classList.add("win-message");
-      winMessage.textContent = "t'y as gagné le boss!";
+      winMessage.textContent = "t'y as gagné le boss";
       board.appendChild(winMessage);
     }
     resetChoices();
@@ -91,19 +92,19 @@ shuffle(emojis).forEach((emoji) => {
       isBoardLocked || 
       firstChoice === card
     ) {
-      return; // early return
+      return;
     }
 
     revealCard(card);
 
     if (firstChoice === null) {
       firstChoice = card;
-      return; // early return
+      return; 
     }
 
     secondChoice = card;
-    isBoardLocked = true; // on bloque le jeu dès que la seconde carte a été choisie
-    checkForMatch(); // on appelle la fonction pour vérifier le résultat
+    isBoardLocked = true; 
+    checkForMatch(); 
   });
 
   board.appendChild(card);
