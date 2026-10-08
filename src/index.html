@@ -8,16 +8,36 @@
   </head>
   <body>
     <h1>Memory Game</h1>
-    <div class="tombe" id="game">
-      
-      <div class="stats">
-  <span>Turns : <strong id="moves">0</strong></span>
-  <span>Time   : <strong id="timer">00:00</strong></span>
-  <button id="restart">Rejouer</button>
-</div>
-      <div id="board">  
+    <div id="menu">
+
+      <div id="mode-choice">
+        <button id="mode-free">Free play</button>
+        <button id="mode-challenge">Challenge</button>
+      </div>
+
+      <div id="challenge-settings" hidden>
+        <h2>Difficulté</h2>
+        <div id="difficulty-options"></div>
+        <h2>Temps</h2>
+        <div id="time-options"></div>
+        <button id="start-challenge">Lancer</button>
+        <button id="back">Retour</button>
+      </div>
     </div>
-    
+
+    <div id="game" hidden>
+      <div class="tombe" id="tombe">
+        <div class="stats">
+          <span>Turns : <strong id="moves">0</strong></span>
+          <span>Time   : <strong id="timer">00:00</strong></span>
+          <button class="btn" id="restart">Rejouer</button>
+          <button class="btn" id="menu-btn">Menu</button>
+        </div>
+        <div id="board">
+        </div>
+      </div>
+    </div>
+ 
     <script src="js/main.js" type="module"></script>
   </body>
 </html>
