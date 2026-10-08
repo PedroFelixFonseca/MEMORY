@@ -100,10 +100,7 @@ const hideCard = (card) => {
   card.classList.add("hidden");
 };
 
-// GSAP : animation quand deux cartes ne correspondent pas
-//   1. petite pause pour mémoriser les cartes
-//   2. secousse gauche/droite
-//   3. la carte pivote jusqu'à 90° (de profil), se cache, puis finit de pivoter
+
 const flipBackCards = (cards, onDone) => {
   mismatchCards = cards;
   mismatchTimeline = gsap.timeline({
@@ -138,7 +135,7 @@ const flipBackCards = (cards, onDone) => {
     });
 };
 
-// GSAP : stoppe proprement une animation en cours (restart, menu, fin de partie)
+
 const cancelMismatchAnimation = () => {
   if (mismatchTimeline) {
     mismatchTimeline.kill();
@@ -165,7 +162,7 @@ const resetChoices = () => {
 
 const endGame = (hasWon) => {
   stopTimer();
-  cancelMismatchAnimation(); // GSAP : remplace clearTimeout(mismatchTimeoutId)
+  cancelMismatchAnimation();
   isBoardLocked = true;
 
   const message = document.createElement("div");
@@ -187,14 +184,13 @@ const checkForMatch = () => {
       endGame(true);
     }
   } else {
-    // GSAP : remplace le setTimeout + hideCard + resetChoices
     flipBackCards([firstChoice, secondChoice], resetChoices);
   }
 };
 
 const startRound = () => {
   stopTimer();
-  cancelMismatchAnimation(); // GSAP : remplace clearTimeout(mismatchTimeoutId)
+  cancelMismatchAnimation();
   moves = 0;
   secondsElapsed = 0;
   cardsLeftToMatch = pairsCount;
