@@ -112,7 +112,7 @@ h1{
 
 
 .lose-message{
-    color: rgb(201, 5, 5);
+    color: rgb(140, 0, 0);
 }
 
 
@@ -184,7 +184,7 @@ h1{
     }
 
     &.selected{
-        outline: 4px solid rgb(201, 5, 5);
+        outline: 4px solid rgb(140, 0, 0);
     }
 }
 
@@ -194,9 +194,9 @@ h1{
         grid-template-columns: 1fr;
         grid-template-rows: auto;
         grid-template-areas:
-        "title"
-        "stats"
-        "board";
+            "title"
+            "stats"
+            "board";
     }
     h1{
         font-size: clamp(60px, 18vw, 120px);

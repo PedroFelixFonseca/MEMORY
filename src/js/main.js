@@ -12,7 +12,7 @@ const emojis = [
   "0",
   "q",
   "w",
-  "u",
+  "u"
 ];
 
 const DIFFICULTIES = [
@@ -36,7 +36,6 @@ let isBoardLocked = false;
 let moves = 0;
 let secondsElapsed = 0;
 let timerId = null;
-let mode = "free";
 let pairsCount = 12;
 let timeLimit = null;
 let challengeDifficulty = DIFFICULTIES[0];
@@ -69,19 +68,22 @@ const updateTimerDisplay = () => {
 const shuffle = (array) => {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    const temp = array[i];
-    array[i] = array[j];
-    array[j] = temp;
+    [array[i], array[j]] = [array[j], array[i]];
   }
-
   return array;
+};
+
+const setCardVisibility = (card, visible) => {
+  card.classList.toggle("hidden", !visible);
 };
 
 const startTimer = () => {
   if (timerId !== null) return;
+
   timerId = setInterval(() => {
     secondsElapsed++;
     updateTimerDisplay();
+
     if (timeLimit !== null && secondsElapsed >= timeLimit) {
       endGame(false);
     }
@@ -92,14 +94,6 @@ const stopTimer = () => {
   clearInterval(timerId);
   timerId = null;
 };
-
-const revealCard = (card) => {
-  card.classList.remove("hidden");
-};
-const hideCard = (card) => {
-  card.classList.add("hidden");
-};
-
 
 const flipBackCards = (cards, onDone) => {
   mismatchCards = cards;
@@ -126,7 +120,7 @@ const flipBackCards = (cards, onDone) => {
       transformPerspective: 600,
       duration: 0.2,
       ease: "power1.in",
-      onComplete: () => cards.forEach(hideCard),
+      onComplete: () => cards.forEach((card) => setCardVisibility(card, false)),
     })
     .to(cards, {
       rotationY: 0,
@@ -135,22 +129,20 @@ const flipBackCards = (cards, onDone) => {
     });
 };
 
-
 const cancelMismatchAnimation = () => {
-  if (mismatchTimeline) {
-    mismatchTimeline.kill();
-    mismatchTimeline = null;
-    gsap.set(mismatchCards, { clearProps: "transform" });
-    mismatchCards.forEach(hideCard);
-    mismatchCards = [];
-  }
+  if (!mismatchTimeline) return;
+
+  mismatchTimeline.kill();
+  mismatchTimeline = null;
+  gsap.set(mismatchCards, { clearProps: "transform" });
+  mismatchCards.forEach((card) => setCardVisibility(card, false));
+  mismatchCards = [];
 };
 
 const createCard = (emoji) => {
   const card = document.createElement("div");
   card.dataset.emoji = emoji;
   card.classList.add("card", "hidden");
-
   return card;
 };
 
@@ -166,26 +158,48 @@ const endGame = (hasWon) => {
   isBoardLocked = true;
 
   const message = document.createElement("div");
-  message.classList.add("win-message");
-  if (hasWon) {
-    message.textContent = "tu as gagné le boss";
-  } else {
-    message.classList.add("lose-message");
-    message.textContent = "Temps écoulé  Tu as perdu le boss";
-  }
+  message.classList.add(hasWon ? "win-message" : "lose-message");
+  message.textContent = hasWon ? "tu as gagné le boss" : "Temps écoulé  Tu as perdu le boss";
   board.appendChild(message);
 };
 
 const checkForMatch = () => {
   if (firstChoice.dataset.emoji === secondChoice.dataset.emoji) {
-    cardsLeftToMatch = cardsLeftToMatch - 1;
+    cardsLeftToMatch -= 1;
     resetChoices();
+
     if (cardsLeftToMatch === 0) {
       endGame(true);
     }
-  } else {
-    flipBackCards([firstChoice, secondChoice], resetChoices);
+    return;
   }
+
+  flipBackCards([firstChoice, secondChoice], resetChoices);
+};
+
+const handleCardClick = (card) => {
+  if (!card.classList.contains("hidden") || isBoardLocked || firstChoice === card) {
+    return;
+  }
+
+  startTimer();
+  setCardVisibility(card, true);
+
+  if (firstChoice === null) {
+    firstChoice = card;
+    return;
+  }
+
+  secondChoice = card;
+  isBoardLocked = true;
+  moves += 1;
+  movesDisplay.textContent = moves;
+  checkForMatch();
+};
+
+const createDeck = () => {
+  const selected = Array.from({ length: pairsCount }, (_, index) => emojis[index % emojis.length]);
+  return shuffle(selected.flatMap((emoji) => [emoji, emoji]));
 };
 
 const startRound = () => {
@@ -200,43 +214,18 @@ const startRound = () => {
   board.innerHTML = "";
 
   const totalCards = pairsCount * 2;
-  const columns = totalCards <= 16 ? 4 : totalCards % 6 === 0 ? 6 : 8;
-  board.style.setProperty("--columns", columns);
+  board.style.setProperty("--columns", totalCards <= 16 ? 4 : totalCards % 6 === 0 ? 6 : 8);
 
-  const pool = shuffle([...emojis]);
-  const selected = Array.from({ length: pairsCount }, (_, i) => pool[i % pool.length]);
-  const deck = shuffle([...selected, ...selected]);
-
-  deck.forEach((emoji) => {
+  createDeck().forEach((emoji) => {
     const card = createCard(emoji);
-
-    card.addEventListener("click", () => {
-      if (!card.classList.contains("hidden") || isBoardLocked || firstChoice === card) {
-        return;
-      }
-
-      startTimer();
-      revealCard(card);
-
-      if (firstChoice === null) {
-        firstChoice = card;
-        return;
-      }
-
-      secondChoice = card;
-      isBoardLocked = true;
-      moves++;
-      movesDisplay.textContent = moves;
-      checkForMatch();
-    });
-
+    card.addEventListener("click", () => handleCardClick(card));
     board.appendChild(card);
   });
 };
 
 const showMenu = () => {
   stopTimer();
-  cancelMismatchAnimation(); // GSAP : remplace clearTimeout(mismatchTimeoutId)
+  cancelMismatchAnimation();
   game.hidden = true;
   menu.hidden = false;
   challengeSettings.hidden = true;
@@ -244,14 +233,14 @@ const showMenu = () => {
 };
 
 const launchGame = (selectedMode) => {
-  mode = selectedMode;
-  if (mode === "challenge") {
+  if (selectedMode === "challenge") {
     pairsCount = challengeDifficulty.pairs;
     timeLimit = challengeTime.seconds;
   } else {
     pairsCount = 24;
     timeLimit = null;
   }
+
   menu.hidden = true;
   game.hidden = false;
   startRound();
@@ -259,18 +248,21 @@ const launchGame = (selectedMode) => {
 
 const buildOptions = (container, items, getLabel, isSelected, onSelect) => {
   container.innerHTML = "";
+
   items.forEach((item) => {
     const button = document.createElement("button");
     button.type = "button";
     button.classList.add("option");
     button.textContent = getLabel(item);
     button.classList.toggle("selected", isSelected(item));
+
     button.addEventListener("click", () => {
       onSelect(item);
-      container
-        .querySelectorAll(".option")
-        .forEach((b) => b.classList.toggle("selected", b === button));
+      container.querySelectorAll(".option").forEach((option) => {
+        option.classList.toggle("selected", option === button);
+      });
     });
+
     container.appendChild(button);
   });
 };
@@ -278,26 +270,28 @@ const buildOptions = (container, items, getLabel, isSelected, onSelect) => {
 buildOptions(
   difficultyOptions,
   DIFFICULTIES,
-  (d) => `${d.label} (${d.pairs} paires)`,
-  (d) => d === challengeDifficulty,
-  (d) => (challengeDifficulty = d)
+  (difficulty) => `${difficulty.label} (${difficulty.pairs} paires)`,
+  (difficulty) => difficulty === challengeDifficulty,
+  (difficulty) => {
+    challengeDifficulty = difficulty;
+  }
 );
 
 buildOptions(
   timeOptions,
   TIME_LIMITS,
-  (t) => t.label,
-  (t) => t === challengeTime,
-  (t) => (challengeTime = t)
+  (time) => time.label,
+  (time) => time === challengeTime,
+  (time) => {
+    challengeTime = time;
+  }
 );
 
 document.querySelector("#mode-free").addEventListener("click", () => launchGame("free"));
-
 document.querySelector("#mode-challenge").addEventListener("click", () => {
   modeChoice.hidden = true;
   challengeSettings.hidden = false;
 });
-
 document.querySelector("#start-challenge").addEventListener("click", () => launchGame("challenge"));
 document.querySelector("#back").addEventListener("click", showMenu);
 document.querySelector("#menu-btn").addEventListener("click", showMenu);
